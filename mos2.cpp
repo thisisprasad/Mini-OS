@@ -33,6 +33,7 @@ void printPCB(int err);
 int getValue(int );
 int getRegister();
 void storeInMemory(int , int );   ///  Stores in memory location ir[2,3](virtual).
+void storeInMemory(int , int , bool );
 void writeInFile(string );
 
 
@@ -107,6 +108,16 @@ int allocateWord(char ch)
 }
 
 void storeInMemory(int res, int ra)
+{
+    mem[ra][0] = res/1000 + '0';
+    mem[ra][1] = (res/100)%10 + '0';
+    mem[ra][2] = (res/10)%10 + '0';
+    mem[ra][3] = res%10 + '0';
+
+    cout<<"mem[0,1,2,3]: "<<mem[ra][0]<<" "<<mem[ra][1]<<" "<<mem[ra][2]<<" "<<mem[ra][3]<<endl; getch();
+}
+
+void storeInMemory(int res, int ra, string msg)
 {
     mem[ra][0] = res/1000 + '0';
     mem[ra][1] = (res/100)%10 + '0';
@@ -551,7 +562,7 @@ void exec_usr_prog()
             if(res > 9999){
             //  Overflow has occured.
                 carry = true;
-                writeInFile("Addition overflow occurred");
+                writeInFile("Addition overflow occurred carry: true");
                 carry = false;
             }
         //  Store this result on memory ir[2,3]
@@ -604,6 +615,13 @@ void exec_usr_prog()
 
             int a = getValue(ra);
             int b = getRegister();
+
+            if(a == 0){
+            //  Divide by error.
+                writeInFile("Divide By Zero Error");
+                return ;
+            }
+
             int quo = b/a;
             int rem = b%a;
             cout<<"In division(quo), rem: "<<quo<<" "<<rem<<endl; getch();
@@ -663,7 +681,9 @@ void exec_usr_prog()
 
             int a = getValue(ra);
             //  int b = getRegister();
-            int res = ~a;   //  2's complement
+        //  Signed result
+            unsigned char res = ~a;   //  2's complement
+            cout<<"res: "<<(int)res<<endl; getch();
             storeInMemory(res, ra);
         }
 
